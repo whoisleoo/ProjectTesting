@@ -15,6 +15,6 @@
     "cheerio": "^1.2.0",
     "cors": "^2.8.6",
     "express": "^5.2.1",
-    "pdf-data-parser": "^1.2.20"
+    "node-poppler": "^9.1.1"
   }
 }
