@@ -1,6 +1,8 @@
 import express from 'express';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
+import { pdfjsLib } from 'pdfjs-dist';
+
 
 
 const router = express.Router();
@@ -14,12 +16,11 @@ router.get('/ensalamento', async (req, res) => {
             const response = await axios.get("https://guarapuava.camporeal.edu.br/ensalamento/");
 
             const data = cheerio.load(response.data);
-            if(data('a[title="Ensalamento Noturno]').attr('href')){
-                res.status(200).json({ message: "sucesso, retornou true."})
-            }else{
-                res.status(404).json({ message: "erro, retornou false."})
-                
-            }
+            const pdfUrl = data('a[title="Ensalamento Noturno"]').attr('href');
+           
+            const pdfParser = await axios.get(pdfUrl, {
+                responseType: 'arraybuffer'
+            })
 
             
         }catch(error){
