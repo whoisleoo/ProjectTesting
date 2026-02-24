@@ -1,6 +1,7 @@
 import express from 'express';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
+import { PdfDataParser } from 'pdf-data-parser';
 
 
 
@@ -24,11 +25,20 @@ router.get('/ensalamento', async (req, res) => {
             })
 
            
+            const parser = new PdfDataParser({
+                data: new Uint8Array(pdfParser.data),
+                newlines: true,
+                lineHeight: 1.67,
+                trim: true
+                        });
+
            
-         
-            
+
+            const rows = await parser.parse();
+            const idx = rows.findIndex(row => row[0]?.includes("ENG SOFT 01 C"));
+            res.status(200).json({ rows: rows.slice(Math.max(0, idx - 2), idx + 8)  });
+
            
-        
             
         }catch(error){
             res.status(500).json({ error: error.message });
