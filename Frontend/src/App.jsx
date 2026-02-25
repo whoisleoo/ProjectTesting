@@ -18,7 +18,7 @@ const CURSOS = [
   'Medicina Veterinária',
   'Nutrição',
   'Odontologia',
-  'Pedagogia',
+  'Publicidade e Propaganda',
   'Psicologia',
 ]
 
@@ -76,7 +76,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center py-12 px-4">
-      <h1 className="text-2xl font-bold text-indigo-600 mb-8" style={{ fontFamily: 'medium' }}>⭐ Ensalamento Guia </h1>
+      <h1 className="text-2xl font-bold text-indigo-600 mb-8" style={{ fontFamily: 'medium' }}>⭐ Campo Guia </h1>
 
       <form onSubmit={buscar} className="bg-white shadow rounded-lg p-6 w-full max-w-md flex flex-col gap-4">
 

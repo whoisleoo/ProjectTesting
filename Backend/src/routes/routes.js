@@ -28,7 +28,7 @@ const CURSOS_MAP = {
     "Nutrição":                  "NUT",
     "Odontologia":               "ODT",
     "Psicologia":                "PSI",
-    "Pedagogia":                 "PP"
+    "Publicidade e Propaganda":                 "PP"
 };
 
 
