@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# ignore o amigo abaixo ele n pode estar no repositorio
+.claude
+
