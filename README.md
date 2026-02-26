@@ -62,7 +62,7 @@ https://localhost:5173
 ```bash
 
 # Entre no diretório backend
-cd frontend
+cd backend
 
 # Instale as dependências
 npm install
@@ -91,6 +91,7 @@ Dependencia 2: <a href="https://ghostscript.com/">Ghostscript</a> <br>
 
 <div align="center">
 ➤ <a href="https://github.com/whoisleoo">whoisleoo</a>
+
 
 
 
