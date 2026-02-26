@@ -50,7 +50,7 @@ router.get('/ensalamento', async (req, res) => {
             const prefixo = CURSOS_MAP[curso];
             const moacir = `${prefixo}${periodo}${turma}`;
             const moacir2 = `${prefixo}${periodo}`;
-            const index = 0;
+            let index = -1;
 
             const response = await axios.get("https://guarapuava.camporeal.edu.br/horarios-das-aulas/");
 
@@ -72,24 +72,24 @@ router.get('/ensalamento', async (req, res) => {
             await poppler.pdfToText(tempPdf, tempTxt, { maintainLayout: true });
             const texto = fs.readFileSync(tempTxt, 'utf-8');
             const pages = texto.split('\f');
-            if(pages.findIndex(i => i.includes(moacir))){
-                const index = pages.findIndex(i => i.includes(moacir));
-            }else if(pages.findIndex(i => i.includes(moacir2))){
-                const index = pages.findIndex(i => i.includes(moacir2));
+            if(pages.findIndex(i => i.includes(moacir)) !== -1){
+                index = pages.findIndex(i => i.includes(moacir));
+            }else if(pages.findIndex(i => i.includes(moacir2)) !== -1){
+                index = pages.findIndex(i => i.includes(moacir2));
 
             }
-            
-                         
+
+
             if(index === -1){
                 return res.status(404).json({ error: "Turma with this name was not found. "});
             }
             const pageLine = pages[index].split('\n');
-            const moacirLine = pageLine.findIndex(i => i.includes(moacir || moacir2));
+            let moacirLine = -1;
 
-            if(pageLine.findIndex(i => i.includes(moacir))){
-                const moacirLine = pageLine.findIndex(i => i.includes(moacir));
-            }else if(pageLine.findIndex(i => i.includes(moacir2))){
-                const moacirLine = pageLine.findIndex(i => i.includes(moacir2));
+            if(pageLine.findIndex(i => i.includes(moacir)) !== -1){
+                moacirLine = pageLine.findIndex(i => i.includes(moacir));
+            }else if(pageLine.findIndex(i => i.includes(moacir2)) !== -1){
+                moacirLine = pageLine.findIndex(i => i.includes(moacir2));
 
             }
 
