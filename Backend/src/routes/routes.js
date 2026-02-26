@@ -8,6 +8,7 @@ import { fromPath } from "pdf2pic";
 import { Poppler } from 'node-poppler';
 import sharp from 'sharp';
 import nodemailer from 'nodemailer';
+import { validarEmail } from '../middlewares/validation.js';
 
 
 
@@ -54,6 +55,8 @@ router.get('/ensalamento', async (req, res) => {
             const moacir = `${prefixo}${periodo}${turma}`;
             const moacir2 = `${prefixo}${periodo}`;
             let index = -1;
+
+           
 
             const response = await axios.get("https://guarapuava.camporeal.edu.br/horarios-das-aulas/");
 
@@ -135,54 +138,64 @@ router.get('/ensalamento', async (req, res) => {
                 }
               })
               
+              if(email){
+                if (!validarEmail(email)) {
+                    return res.status(400).json({ error: "Email tá incorreto" });
+                }
 
-              await transporter.sendMail({
-                from: '"Ensalamento" <salabonita@gmail.com>',
-                to: email,
-                subject: `Ensalamento - ${curso}`,
-                html: `
-                  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f5f5f5; padding: 24px; border-radius: 8px;">
-                    <div style="background: #1a1a2e; padding: 20px; border-radius: 8px 8px 0 0; text-align: center;">
-                      <h1 style="color: #ffffff; margin: 0; font-size: 22px;">Ensalamento</h1>
-                    </div>
-              
-                    <div style="background: #ffffff; padding: 24px; border-radius: 0 0 8px 8px;">
-                      <p style="color: #333; font-size: 15px;">Olá! Segue o ensalamento para:</p>
-              
-                      <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
-                        <tr style="background: #f0f0f0;">
-                          <td style="padding: 8px 12px; font-weight: bold; color: #555;">Curso</td>
-                          <td style="padding: 8px 12px; color: #333;">${curso}</td>
-                        </tr>
-                        <tr>
-                          <td style="padding: 8px 12px; font-weight: bold; color: #555;">Período</td>
-                          <td style="padding: 8px 12px; color: #333;">${periodo}º</td>
-                        </tr>
-                        <tr style="background: #f0f0f0;">
-                          <td style="padding: 8px 12px; font-weight: bold; color: #555;">Turma</td>
-                          <td style="padding: 8px 12px; color: #333;">${turma}</td>
-                        </tr>
-                      </table>
-              
-                      <div style="text-align: center; margin: 24px 0;">
-                        <img src="cid:ensalamento_img" style="max-width: 100%; border-radius: 6px; border: 1px solid #ddd;" />
+                await transporter.sendMail({
+                    from: '"Ensalamento" <salabonita@gmail.com>',
+                    to: email,
+                    subject: `Ensalamento - ${curso}`,
+                    html: `
+                      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f5f5f5; padding: 24px; border-radius: 8px;">
+                        <div style="background: #1a1a2e; padding: 20px; border-radius: 8px 8px 0 0; text-align: center;">
+                          <h1 style="color: #ffffff; margin: 0; font-size: 22px;">Ensalamento</h1>
+                        </div>
+                  
+                        <div style="background: #ffffff; padding: 24px; border-radius: 0 0 8px 8px;">
+                          <p style="color: #333; font-size: 15px;">Olá! Segue o ensalamento para:</p>
+                  
+                          <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+                            <tr style="background: #f0f0f0;">
+                              <td style="padding: 8px 12px; font-weight: bold; color: #555;">Curso</td>
+                              <td style="padding: 8px 12px; color: #333;">${curso}</td>
+                            </tr>
+                            <tr>
+                              <td style="padding: 8px 12px; font-weight: bold; color: #555;">Período</td>
+                              <td style="padding: 8px 12px; color: #333;">${periodo}º</td>
+                            </tr>
+                            <tr style="background: #f0f0f0;">
+                              <td style="padding: 8px 12px; font-weight: bold; color: #555;">Turma</td>
+                              <td style="padding: 8px 12px; color: #333;">${turma}</td>
+                            </tr>
+                          </table>
+                  
+                          <div style="text-align: center; margin: 24px 0;">
+                            <img src="cid:ensalamento_img" style="max-width: 100%; border-radius: 6px; border: 1px solid #ddd;" />
+                          </div>
+                  
+                          <p style="color: #999; font-size: 12px; text-align: center; margin-top: 24px;">
+                            Campo Real — Gerado pela API bonita
+                          </p>
+                        </div>
                       </div>
+                    `,
+                    attachments: [
+                      {
+                        filename: 'ensalamento.png',
+                        content: imgBuffer,
+                        contentType: 'image/png',
+                        cid: 'ensalamento_img', 
+                      }
+                    ]
+                  });
+
+                  return res.status(200).json({ message: `Email enviado a ${email}` });
+
+            }
+
               
-                      <p style="color: #999; font-size: 12px; text-align: center; margin-top: 24px;">
-                        Campo Real — Gerado pela API bonita
-                      </p>
-                    </div>
-                  </div>
-                `,
-                attachments: [
-                  {
-                    filename: 'ensalamento.png',
-                    content: imgBuffer,
-                    contentType: 'image/png',
-                    cid: 'ensalamento_img', 
-                  }
-                ]
-              });
               
               res.set('Content-Type', 'image/png');
               res.send(imgBuffer);

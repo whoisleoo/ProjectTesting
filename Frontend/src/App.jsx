@@ -28,6 +28,7 @@ export default function App() {
   const [periodo, setPeriodo] = useState('')
   const [turma, setTurma] = useState('')
   const [imgSrc, setImgSrc] = useState(null)
+  const [successMsg, setSuccessMsg] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
@@ -52,6 +53,7 @@ export default function App() {
     e.preventDefault()
     setError(null)
     setImgSrc(null)
+    setSuccessMsg(null)
     setLoading(true)
 
     const periodoPadded = periodo.padStart(2, '0')
@@ -66,8 +68,13 @@ export default function App() {
         throw new Error(mensagemErro(res.status, body))
       }
 
-      const blob = await res.blob()
-      setImgSrc(URL.createObjectURL(blob))
+      if (email) {
+        const data = await res.json()
+        setSuccessMsg(data.message)
+      } else {
+        const blob = await res.blob()
+        setImgSrc(URL.createObjectURL(blob))
+      }
     } catch (err) {
       setError(err.message)
     } finally {
@@ -82,7 +89,7 @@ export default function App() {
       <form onSubmit={buscar} className="bg-white shadow rounded-lg p-6 w-full max-w-md flex flex-col gap-4">
 
         <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-gray-700">Curso</label>
+          <label className="text-sm font-medium text-gray-700">* Curso</label>
           <select
             required
             value={curso}
@@ -95,7 +102,7 @@ export default function App() {
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-gray-700">Período</label>
+          <label className="text-sm font-medium text-gray-700">* Período</label>
           <input
             required
             type="text"
@@ -107,7 +114,7 @@ export default function App() {
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-gray-700">Turma</label>
+          <label className="text-sm font-medium text-gray-700">* Turma</label>
           <input
             required
             type="text"
@@ -119,9 +126,9 @@ export default function App() {
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-gray-700">Email</label>
+          <label className="text-sm font-medium text-gray-700">Envio por email (Opcional)</label>
           <input
-            required
+    
             type="email"
             placeholder="Ex: aaa@gmail.com"
             value={email}
@@ -139,9 +146,19 @@ export default function App() {
         </button>
       </form>
 
+      <div className='mt-5 mb-5  text-center'>
+        <h1 className='text-indigo-900'>developed by </h1> <a href="https://github.com/whoisleoo" className='hover:text-indigo-700 transition-colors'>whoisleoo</a>
+      </div>
+
       {error && (
         <div className="mt-6 bg-red-50 border border-red-200 text-red-700 rounded px-4 py-3 text-sm max-w-md w-full">
           {error}
+        </div>
+      )}
+
+      {successMsg && (
+        <div className="mt-6 bg-green-50 border border-green-200 text-green-700 rounded px-4 py-3 text-sm max-w-md w-full">
+          {successMsg}
         </div>
       )}
 
