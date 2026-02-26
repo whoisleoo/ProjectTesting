@@ -17,3 +17,23 @@ body {
   font-family: 'medium';
   src: url('/medium.otf') format('opentype')
 }
+
+::-webkit-scrollbar {
+  background-color: #000;
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2f2f2f;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2f2f2f;
+}
+
