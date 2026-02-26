@@ -1,7 +1,7 @@
 import { useState } from 'react'
 // ESSE FRONTEND FOI VIBECODADO TOTALMENTE VIBECODADO
 
-const CURSOS = [
+  const CURSOS = [
   'Administração',
   'Arquitetura e Urbanismo',
   'Biomedicina',
@@ -24,13 +24,16 @@ const CURSOS = [
 
 export default function App() {
   const [curso, setCurso] = useState('')
+  const [canal, setCanal] = useState('')
   const [email, setEmail] = useState('')
   const [periodo, setPeriodo] = useState('')
   const [turma, setTurma] = useState('')
   const [imgSrc, setImgSrc] = useState(null)
-  const [successMsg, setSuccessMsg] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [webhook, setWebhook] = useState('')
+
+
 
   function handlePeriodo(val) {
     if (/^\d{0,2}$/.test(val)) setPeriodo(val)
@@ -53,13 +56,12 @@ export default function App() {
     e.preventDefault()
     setError(null)
     setImgSrc(null)
-    setSuccessMsg(null)
     setLoading(true)
 
     const periodoPadded = periodo.padStart(2, '0')
 
     try {
-      const params = new URLSearchParams({ curso, periodo: periodoPadded, turma, email })
+      const params = new URLSearchParams({ curso, periodo: periodoPadded, turma, email, webhook, canal })
       const res = await fetch(`/api/ensalamento?${params}`)
 
       if (!res.ok) {
@@ -68,13 +70,8 @@ export default function App() {
         throw new Error(mensagemErro(res.status, body))
       }
 
-      if (email) {
-        const data = await res.json()
-        setSuccessMsg(data.message)
-      } else {
-        const blob = await res.blob()
-        setImgSrc(URL.createObjectURL(blob))
-      }
+      const blob = await res.blob()
+      setImgSrc(URL.createObjectURL(blob))
     } catch (err) {
       setError(err.message)
     } finally {
@@ -126,16 +123,50 @@ export default function App() {
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-gray-700">Envio por email (Opcional)</label>
-          <input
-    
-            type="email"
-            placeholder="Ex: aaa@gmail.com"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
+          <label className="text-sm font-medium text-gray-700">Modo de envio</label>
+          <select
+            value={canal}
+            onChange={e => setCanal(e.target.value)}
             className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
-          />
+          >
+            <option value="">Padrão</option>
+            <option value="email">Email</option>
+            <option value="discord">Discord</option>  
+          </select>
         </div>
+
+        {canal === "email" && (
+        <div className="flex flex-col gap-1">
+        <label className="text-sm font-medium text-gray-700">
+          Envio por email
+        </label>
+        <input
+        required
+        type="email"
+        placeholder="Ex: aaa@gmail.com"
+        value={email}
+        onChange={e => setEmail(e.target.value)}
+        className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        />
+         </div>
+)}
+        
+
+        {canal === "discord" && (
+        <div className="flex flex-col gap-1">
+        <label className="text-sm font-medium text-gray-700">
+          Envio por Discord Webhook
+        </label>
+        <input
+        required
+        type="text"
+        placeholder="Ex: https://discord.com/api/webhooks/"
+        value={webhook}
+        onChange={e => setWebhook(e.target.value)}
+        className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        />
+         </div>
+)}
 
         <button
           type="submit"
@@ -153,12 +184,6 @@ export default function App() {
       {error && (
         <div className="mt-6 bg-red-50 border border-red-200 text-red-700 rounded px-4 py-3 text-sm max-w-md w-full">
           {error}
-        </div>
-      )}
-
-      {successMsg && (
-        <div className="mt-6 bg-green-50 border border-green-200 text-green-700 rounded px-4 py-3 text-sm max-w-md w-full">
-          {successMsg}
         </div>
       )}
 
