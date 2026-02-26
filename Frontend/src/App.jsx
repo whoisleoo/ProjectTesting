@@ -24,6 +24,7 @@ const CURSOS = [
 
 export default function App() {
   const [curso, setCurso] = useState('')
+  const [email, setEmail] = useState('')
   const [periodo, setPeriodo] = useState('')
   const [turma, setTurma] = useState('')
   const [imgSrc, setImgSrc] = useState(null)
@@ -56,7 +57,7 @@ export default function App() {
     const periodoPadded = periodo.padStart(2, '0')
 
     try {
-      const params = new URLSearchParams({ curso, periodo: periodoPadded, turma })
+      const params = new URLSearchParams({ curso, periodo: periodoPadded, turma, email })
       const res = await fetch(`/api/ensalamento?${params}`)
 
       if (!res.ok) {
@@ -113,6 +114,18 @@ export default function App() {
             placeholder="Ex: A"
             value={turma}
             onChange={e => handleTurma(e.target.value)}
+            className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          />
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium text-gray-700">Email</label>
+          <input
+            required
+            type="email"
+            placeholder="Ex: aaa@gmail.com"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
             className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
           />
         </div>
