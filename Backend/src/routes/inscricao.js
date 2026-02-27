@@ -7,10 +7,12 @@ import { validarEmail } from '../middlewares/validation.js';
 const router = express.Router();
 
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.hostinger.com',
+    port: 465,
+    secure: true,
     auth: {
-        user: process.env.GMAIL_EMAIL,
-        pass: process.env.GMAIL_PASSWORD,
+        user: process.env.SMTP_EMAIL,
+        pass: process.env.SMTP_PASSWORD,
     }
 });
 
@@ -34,7 +36,7 @@ router.post('/inscricao', async (req, res) => {
         );
 
         await transporter.sendMail({
-            from: '"Campo Guia" <salabonita@gmail.com>',
+            from: '"Campo Guia" <dev@pontobmz.com>',
             to: email,
             subject: 'Inscrição confirmada — Campo Guia',
             html: `
@@ -91,7 +93,7 @@ router.get('/cancelar/:token', async (req, res) => {
         await pool.execute('DELETE FROM inscritos WHERE token = ?', [token]);
 
         await transporter.sendMail({
-            from: '"Campo Guia" <salabonita@gmail.com>',
+            from: '"Campo Guia" <dev@pontobmz.com>',
             to: inscrito.email,
             subject: 'Inscrição cancelada — Campo Guia',
             html: `

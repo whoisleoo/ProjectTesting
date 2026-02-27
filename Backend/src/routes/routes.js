@@ -132,10 +132,12 @@ router.get('/ensalamento', async (req, res) => {
         }
 
         const transporter = nodemailer.createTransport({
-            service: 'gmail',
+            host: 'smtp.hostinger.com',
+            port: 465,
+            secure: true,
             auth: {
-                user: process.env.GMAIL_EMAIL,
-                pass: process.env.GMAIL_PASSWORD,
+                user: process.env.SMTP_EMAIL,
+                pass: process.env.SMTP_PASSWORD,
             }
         });
 
@@ -160,7 +162,7 @@ router.get('/ensalamento', async (req, res) => {
                 if (!validarEmail(email)) return res.status(400).json({ error: "Email tá incorreto" });
 
                 await transporter.sendMail({
-                    from: '"Ensalamento" <salabonita@gmail.com>',
+                    from: '"Ensalamento" <dev@pontobmz.com>',
                     to: email,
                     subject: `Ensalamento - ${curso}`,
                     html: `

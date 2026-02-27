@@ -4,10 +4,12 @@ import pool from './db/conexao.js';
 import { gerarImagem } from './routes/routes.js';
 
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.hostinger.com',
+    port: 465,
+    secure: true,
     auth: {
-        user: process.env.GMAIL_EMAIL,
-        pass: process.env.GMAIL_PASSWORD,
+        user: process.env.SMTP_EMAIL,
+        pass: process.env.SMTP_PASSWORD,
     }
 });
 
@@ -20,7 +22,7 @@ async function enviarParaInscritos() {
             const linkCancelar = `${process.env.BASE_URL}/api/cancelar/${manga.token}`;
 
             await transporter.sendMail({
-                from: '"Ensalamento Diário" <salabonita@gmail.com>',
+                from: '"Ensalamento Diário" <dev@pontobmz.com>',
                 to: manga.email,
                 subject: `Ensalamento de hoje — ${manga.curso}`,
                 html: `
