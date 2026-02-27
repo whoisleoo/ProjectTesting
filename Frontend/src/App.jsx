@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import './App.css'
 
+const API = import.meta.env.VITE_API_URL || ''
+
 const CURSOS = [
   'Administração', 'Arquitetura e Urbanismo', 'Biomedicina',
   'Ciências Contábeis', 'Direito', 'Enfermagem', 'Engenharia Agronômica',
@@ -61,7 +63,7 @@ export default function App() {
     const periodoPadded = periodo.padStart(2, '0')
     try {
       const params = new URLSearchParams({ curso, periodo: periodoPadded, turma, email, webhook, canal })
-      const res = await fetch(`/api/ensalamento?${params}`)
+      const res = await fetch(`${API}/api/ensalamento?${params}`)
       if (!res.ok) {
         let body = null
         try { body = await res.json() } catch {}
@@ -83,7 +85,7 @@ export default function App() {
     setSubLoading(true)
     const periodoPadded = subPeriodo.padStart(2, '0')
     try {
-      const res = await fetch('/api/inscricao', {
+      const res = await fetch(`${API}/api/inscricao`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: subEmail, curso: subCurso, periodo: periodoPadded, turma: subTurma }),
