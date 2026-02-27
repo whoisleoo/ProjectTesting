@@ -20,12 +20,28 @@ export default function App() {
   const [error, setError] = useState(null)
   const [webhook, setWebhook] = useState('')
 
+  const [subEmail, setSubEmail] = useState('')
+  const [subCurso, setSubCurso] = useState('')
+  const [subPeriodo, setSubPeriodo] = useState('')
+  const [subTurma, setSubTurma] = useState('')
+  const [subLoading, setSubLoading] = useState(false)
+  const [subMsg, setSubMsg] = useState(null)
+  const [subErro, setSubErro] = useState(null)
+
   function handlePeriodo(val) {
     if (/^\d{0,2}$/.test(val)) setPeriodo(val)
   }
 
   function handleTurma(val) {
     if (/^[a-zA-Z]?$/.test(val)) setTurma(val.toUpperCase())
+  }
+
+  function handleSubPeriodo(val) {
+    if (/^\d{0,2}$/.test(val)) setSubPeriodo(val)
+  }
+
+  function handleSubTurma(val) {
+    if (/^[a-zA-Z]?$/.test(val)) setSubTurma(val.toUpperCase())
   }
 
   function mensagemErro(status, body) {
@@ -57,6 +73,29 @@ export default function App() {
       setError(err.message)
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function inscrever(e) {
+    e.preventDefault()
+    setSubMsg(null)
+    setSubErro(null)
+    setSubLoading(true)
+    const periodoPadded = subPeriodo.padStart(2, '0')
+    try {
+      const res = await fetch('/api/inscricao', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: subEmail, curso: subCurso, periodo: periodoPadded, turma: subTurma }),
+      })
+      const body = await res.json()
+      if (!res.ok) throw new Error(body.error || 'Erro ao cadastrar.')
+      setSubMsg('Cadastro realizado! Você receberá o ensalamento todo dia às 08h.')
+      setSubEmail(''); setSubCurso(''); setSubPeriodo(''); setSubTurma('')
+    } catch (err) {
+      setSubErro(err.message)
+    } finally {
+      setSubLoading(false)
     }
   }
 
@@ -149,6 +188,64 @@ export default function App() {
           Ver imagem →
         </a>
       )}
+
+      <form onSubmit={inscrever} className="app-card">
+        <p style={{ fontSize: '11px', color: '#555', fontFamily: "'DM Mono', monospace", margin: 0 }}>
+          receber todo dia às 08h
+        </p>
+
+        <div className="field">
+          <label>Email <span className="req">*</span></label>
+          <input
+            required
+            type="email"
+            placeholder="seu@email.com"
+            value={subEmail}
+            onChange={e => setSubEmail(e.target.value)}
+          />
+        </div>
+
+        <div className="field">
+          <label>Curso <span className="req">*</span></label>
+          <select required value={subCurso} onChange={e => setSubCurso(e.target.value)}>
+            <option value="">Selecione...</option>
+            {CURSOS.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </div>
+
+        <div className="flex gap-3">
+          <div className="field flex-1">
+            <label>Período <span className="req">*</span></label>
+            <input
+              required
+              type="text"
+              placeholder="3"
+              value={subPeriodo}
+              onChange={e => handleSubPeriodo(e.target.value)}
+            />
+          </div>
+          <div className="field flex-1">
+            <label>Turma <span className="req">*</span></label>
+            <input
+              required
+              type="text"
+              placeholder="A"
+              value={subTurma}
+              onChange={e => handleSubTurma(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <button type="submit" disabled={subLoading} className="app-btn">
+          {subLoading
+            ? <span className="flex items-center justify-center gap-2"><span className="spinner" />Cadastrando...</span>
+            : 'Cadastrar'
+          }
+        </button>
+
+        {subMsg && <p className="app-error" style={{ color: '#4a4' }}>{subMsg}</p>}
+        {subErro && <p className="app-error">{subErro}</p>}
+      </form>
 
       <footer className="app-footer">
         desenvolvido por{' '}

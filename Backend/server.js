@@ -2,6 +2,8 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import router from './src/routes/routes.js';
+import inscricaoRouter from './src/routes/inscricao.js';
+import './src/agendador.js';
 
 const PORT = process.env.PORT || 8080;
 const app = express();
@@ -14,6 +16,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api', router);
+app.use('/api', inscricaoRouter);
 
 app.listen(PORT, () => {
     console.log(`Server [REAL FINDER] is now online at port ${PORT}`);
